@@ -88,4 +88,18 @@ public interface ComptabiliteDao {
      * @return
      */
 	SequenceEcritureComptable getLastSequence(EcritureComptable pEcritureComptable);
+
+	/**
+	 * Met à jour la séquence écriture comptable
+	 * @param pSequenceEcritureComptable
+	 * @param code
+	 */
+	void updateSequence(SequenceEcritureComptable pSequenceEcritureComptable, String code);
+
+	/**
+	 * Insert une nouvelle séquence écriture comptable
+	 * @param pSequenceEcritureComptable
+	 * @param code
+	 */
+	void insertSequence(SequenceEcritureComptable pSequenceEcritureComptable, String code);
 }

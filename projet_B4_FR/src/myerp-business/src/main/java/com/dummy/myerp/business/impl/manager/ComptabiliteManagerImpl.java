@@ -81,9 +81,10 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     	vDerniereSequence = getLastSequence(pEcritureComptable);    	
     	
 		/* 2.  * S'il n'y a aucun enregistrement pour le journal pour l'année concernée :
-                1. Utiliser le numéro 1.*/
-	    	/* * Sinon :
-	        	1. Utiliser la dernière valeur + 1 */
+                Utiliser le numéro 1.	
+                
+	    	   * Sinon :
+	         	Utiliser la dernière valeur + 1 	*/
     	
     	int numDerniereSequence;
     	
@@ -108,18 +109,32 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     	nouvelleRef += pEcritureComptable.getJournal().getCode() 
     				+ "-" 
     				+ annee
+    				+"/"
     				+ String.format("%05d", numDerniereSequence);
     	
     	pEcritureComptable.setReference(nouvelleRef);
     	
     	//Si il n'existe pas de séquence, on la créé 
+    	
     	if(vDerniereSequence == null) {
     		vNouvelleSequence.setAnnee(calendar.get(Calendar.YEAR));
     		vNouvelleSequence.setDerniereValeur(numDerniereSequence);
-    	}
-    	
+    		
 		/* 4.  Enregistrer (insert/update) la valeur de la séquence en persitance
-            (table sequence_ecriture_comptable) */
+        (table sequence_ecriture_comptable) */
+    		
+    		insertSequence(vNouvelleSequence, pEcritureComptable.getJournal().getCode());
+    		
+    	}else {
+    		vNouvelleSequence = vDerniereSequence;
+    		vNouvelleSequence.setDerniereValeur(numDerniereSequence);
+    		
+    		try {
+    			updateSequence(vNouvelleSequence, pEcritureComptable.getJournal().getCode());
+    		}catch(FunctionalException fe) {
+    			fe.printStackTrace();
+    		}
+    	}
     }
 
     /**
@@ -131,7 +146,6 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         this.checkEcritureComptableUnit(pEcritureComptable);
         this.checkEcritureComptableContext(pEcritureComptable);
     }
-
 
     /**
      * Vérifie que l'Ecriture comptable respecte les règles de gestion unitaires,
@@ -256,4 +270,34 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
             getTransactionManager().rollbackMyERP(vTS);
         }
     }   
+    
+    
+    @Override
+	public void insertSequence(SequenceEcritureComptable vSequenceToInsert, String code) {
+    	TransactionStatus vTS = getTransactionManager().beginTransactionMyERP();
+    	try {
+    		getDaoProxy().getComptabiliteDao().insertSequence(vSequenceToInsert, code);
+    		getTransactionManager().commitMyERP(vTS);
+    		vTS = null;
+    	} finally {
+    		getTransactionManager().rollbackMyERP(vTS);
+    	}
+    }
+    
+    @Override
+	public void updateSequence(SequenceEcritureComptable vSequenceToUpdate, String code) throws FunctionalException {
+    	TransactionStatus vTS = getTransactionManager().beginTransactionMyERP();
+    	try {
+    		getDaoProxy().getComptabiliteDao().updateSequence(vSequenceToUpdate, code);
+    		getTransactionManager().commitMyERP(vTS);
+    		vTS = null;
+    	} finally {
+    		getTransactionManager().rollbackMyERP(vTS);
+    	}
+    }
+    
+    
+    
+    
+    
 }

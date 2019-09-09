@@ -78,6 +78,7 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         return vList;
     }
     
+    /** SQLgetLastSequence */
     private static String SQLgetLastSequence;
     public void setSQLgetLastSequence(String pSQLgetLastSequence) {
     	SQLgetLastSequence = pSQLgetLastSequence;
@@ -291,5 +292,27 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("ecriture_id", pEcritureId);
         vJdbcTemplate.update(SQLdeleteListLigneEcritureComptable, vSqlParams);
+    }
+    
+    // ==================== SequenceEcritureComptable - INSERT ====================
+    
+    /** SQLinsertSequenceEcritureComptable */
+    private static String SQLinsertSequenceEcritureComptable;
+    public void setSQLinsertSequenceEcritureComptable(String pSQLinsertSequenceEcritureComptable) {
+        SQLinsertEcritureComptable = pSQLinsertSequenceEcritureComptable;
+    }
+    @Override
+    public void insertSequence(SequenceEcritureComptable pSequenceEcritureComptable, String code) {
+        
+    }
+    
+    /** SQLupdateSequenceEcritureComptable */
+    private static String SQLupdateSequenceEcritureComptable;
+    public void setSQLupdateSequenceEcritureComptable(String pSQLupdateSequenceEcritureComptable) {
+        SQLinsertEcritureComptable = pSQLupdateSequenceEcritureComptable;
+    }
+    @Override
+    public void updateSequence(SequenceEcritureComptable pSequenceEcritureComptable, String code) {
+        
     }
 }

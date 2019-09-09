@@ -90,4 +90,19 @@ public interface ComptabiliteManager {
      * @return
      */
 	SequenceEcritureComptable getLastSequence(EcritureComptable pEcritureComptable);
+
+	/**
+	 * Met à jour la séquence
+	 * @param vSequenceToUpdate
+	 * @param code
+	 * @throws FunctionalException
+	 */
+	void updateSequence(SequenceEcritureComptable vSequenceToUpdate, String code) throws FunctionalException;
+
+	/**
+	 * Insert une nouvelle séquence
+	 * @param vSequenceToInsert
+	 * @param code
+	 */
+	void insertSequence(SequenceEcritureComptable vSequenceToInsert, String code);
 }
