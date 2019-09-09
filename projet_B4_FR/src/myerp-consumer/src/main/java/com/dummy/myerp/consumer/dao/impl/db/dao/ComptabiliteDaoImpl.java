@@ -1,6 +1,7 @@
 package com.dummy.myerp.consumer.dao.impl.db.dao;
 
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,6 +13,7 @@ import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.CompteComptab
 import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.EcritureComptableRM;
 import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.JournalComptableRM;
 import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.LigneEcritureComptableRM;
+import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.SequenceEcritureComptableRM;
 import com.dummy.myerp.consumer.db.AbstractDbConsumer;
 import com.dummy.myerp.consumer.db.DataSourcesEnum;
 import com.dummy.myerp.model.bean.comptabilite.CompteComptable;
@@ -76,9 +78,26 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         return vList;
     }
     
+    private static String SQLgetLastSequence;
+    public void setSQLgetLastSequence(String pSQLgetLastSequence) {
+    	SQLgetLastSequence = pSQLgetLastSequence;
+    }
     @Override
 	public SequenceEcritureComptable getLastSequence(EcritureComptable pEcritureComptable) {
-    	return new SequenceEcritureComptable();
+    	NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(getDataSource(DataSourcesEnum.MYERP));
+        MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
+        vSqlParams.addValue("journal_code", pEcritureComptable.getJournal().getCode());
+    	
+    	Calendar calendar = Calendar.getInstance();
+    	calendar.setTime(pEcritureComptable.getDate());
+    	vSqlParams.addValue("annee", calendar.get(Calendar.YEAR));
+    	
+    	SequenceEcritureComptableRM vRM = new SequenceEcritureComptableRM();
+    	SequenceEcritureComptable vBean = new SequenceEcritureComptable();
+    	
+    	vBean = vJdbcTemplate.queryForObject(SQLgetLastSequence, vSqlParams, vRM);
+    	
+    	return vBean;
     }
 
     // ==================== EcritureComptable - GET ====================
