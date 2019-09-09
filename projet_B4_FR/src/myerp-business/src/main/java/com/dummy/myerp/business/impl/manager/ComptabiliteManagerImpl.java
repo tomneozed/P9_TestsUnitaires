@@ -1,6 +1,7 @@
 package com.dummy.myerp.business.impl.manager;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
@@ -15,6 +16,7 @@ import com.dummy.myerp.model.bean.comptabilite.CompteComptable;
 import com.dummy.myerp.model.bean.comptabilite.EcritureComptable;
 import com.dummy.myerp.model.bean.comptabilite.JournalComptable;
 import com.dummy.myerp.model.bean.comptabilite.LigneEcritureComptable;
+import com.dummy.myerp.model.bean.comptabilite.SequenceEcritureComptable;
 import com.dummy.myerp.technical.exception.FunctionalException;
 import com.dummy.myerp.technical.exception.NotFoundException;
 
@@ -54,6 +56,11 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     public List<EcritureComptable> getListEcritureComptable() {
         return getDaoProxy().getComptabiliteDao().getListEcritureComptable();
     }
+    
+    @Override
+	public SequenceEcritureComptable getLastSequence(EcritureComptable pEcritureComptable) {
+    	return getDaoProxy().getComptabiliteDao().getLastSequence(pEcritureComptable);
+    }
 
     /**
      * {@inheritDoc}
@@ -63,17 +70,56 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     public synchronized void addReference(EcritureComptable pEcritureComptable) {
         // TODO à implémenter
         // Bien se réferer à la JavaDoc de cette méthode !
+    	
+    	SequenceEcritureComptable vDerniereSequence = new SequenceEcritureComptable();
+    	SequenceEcritureComptable vNouvelleSequence = new SequenceEcritureComptable();
+    	
         /* Le principe :
-                1.  Remonter depuis la persitance la dernière valeur de la séquence du journal pour l'année de l'écriture
-                    (table sequence_ecriture_comptable)
-                2.  * S'il n'y a aucun enregistrement pour le journal pour l'année concernée :
-                        1. Utiliser le numéro 1.
-                    * Sinon :
-                        1. Utiliser la dernière valeur + 1
-                3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5)
-                4.  Enregistrer (insert/update) la valeur de la séquence en persitance
-                    (table sequence_ecriture_comptable)
-         */
+        1.  Remonter depuis la persitance la dernière valeur de la séquence du journal pour l'année de l'écriture
+            (table sequence_ecriture_comptable)*/
+    	
+    	vDerniereSequence = getLastSequence(pEcritureComptable);    	
+    	
+		/* 2.  * S'il n'y a aucun enregistrement pour le journal pour l'année concernée :
+                1. Utiliser le numéro 1.*/
+	    	/* * Sinon :
+	        	1. Utiliser la dernière valeur + 1 */
+    	
+    	int numDerniereSequence;
+    	
+    	if(vDerniereSequence == null) {
+    		numDerniereSequence = 1;
+    	}else {
+    		numDerniereSequence = vDerniereSequence.getDerniereValeur()+1;
+    	}
+    	
+		/* 3.  Mettre à jour la référence de l'écriture avec la référence calculée (RG_Compta_5) */
+    	
+    	String nouvelleRef = "";
+    	
+    	//Extraction de l'annee
+    	
+    	Calendar calendar = Calendar.getInstance();
+    	calendar.setTime(pEcritureComptable.getDate());
+    	String annee = String.valueOf(calendar.get(Calendar.YEAR));
+    	
+    	//Concatenation nouvelle référence
+    	
+    	nouvelleRef += pEcritureComptable.getJournal().getCode() 
+    				+ "-" 
+    				+ annee
+    				+ String.format("%05d", numDerniereSequence);
+    	
+    	pEcritureComptable.setReference(nouvelleRef);
+    	
+    	//Si il n'existe pas de séquence, on la créé 
+    	if(vDerniereSequence == null) {
+    		vNouvelleSequence.setAnnee(calendar.get(Calendar.YEAR));
+    		vNouvelleSequence.setDerniereValeur(numDerniereSequence);
+    	}
+    	
+		/* 4.  Enregistrer (insert/update) la valeur de la séquence en persitance
+            (table sequence_ecriture_comptable) */
     }
 
     /**
@@ -209,5 +255,5 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         } finally {
             getTransactionManager().rollbackMyERP(vTS);
         }
-    }
+    }   
 }

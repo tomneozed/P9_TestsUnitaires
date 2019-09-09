@@ -18,6 +18,7 @@ import com.dummy.myerp.model.bean.comptabilite.CompteComptable;
 import com.dummy.myerp.model.bean.comptabilite.EcritureComptable;
 import com.dummy.myerp.model.bean.comptabilite.JournalComptable;
 import com.dummy.myerp.model.bean.comptabilite.LigneEcritureComptable;
+import com.dummy.myerp.model.bean.comptabilite.SequenceEcritureComptable;
 import com.dummy.myerp.technical.exception.NotFoundException;
 
 
@@ -28,14 +29,14 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
 
     // ==================== Constructeurs ====================
     /** Instance unique de la classe (design pattern Singleton) */
-    private static final ComptabiliteDaoImpl INSTANCE = new ComptabiliteDaoImpl();
+    private static final ComptabiliteDao INSTANCE = new ComptabiliteDaoImpl();
 
     /**
      * Renvoie l'instance unique de la classe (design pattern Singleton).
      *
      * @return {@link ComptabiliteDaoImpl}
      */
-    public static ComptabiliteDaoImpl getInstance() {
+    public static ComptabiliteDao getInstance() {
         return ComptabiliteDaoImpl.INSTANCE;
     }
 
@@ -73,6 +74,11 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         JournalComptableRM vRM = new JournalComptableRM();
         List<JournalComptable> vList = vJdbcTemplate.query(SQLgetListJournalComptable, vRM);
         return vList;
+    }
+    
+    @Override
+	public SequenceEcritureComptable getLastSequence(EcritureComptable pEcritureComptable) {
+    	return new SequenceEcritureComptable();
     }
 
     // ==================== EcritureComptable - GET ====================

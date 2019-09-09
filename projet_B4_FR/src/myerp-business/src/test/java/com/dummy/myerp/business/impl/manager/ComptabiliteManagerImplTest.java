@@ -8,6 +8,7 @@ import com.dummy.myerp.model.bean.comptabilite.CompteComptable;
 import com.dummy.myerp.model.bean.comptabilite.EcritureComptable;
 import com.dummy.myerp.model.bean.comptabilite.JournalComptable;
 import com.dummy.myerp.model.bean.comptabilite.LigneEcritureComptable;
+import com.dummy.myerp.model.bean.comptabilite.SequenceEcritureComptable;
 import com.dummy.myerp.technical.exception.FunctionalException;
 
 
@@ -70,5 +71,21 @@ public class ComptabiliteManagerImplTest {
                                                                                  null));
         manager.checkEcritureComptableUnit(vEcritureComptable);
     }
+    
+    @Test()
+    public void checkEcritureComptableUnitRG5() throws Exception {
+    	
+    	SequenceEcritureComptable vSequenceEcritureComptable;
+    	vSequenceEcritureComptable = new SequenceEcritureComptable();
+    	vSequenceEcritureComptable.setAnnee(2018);
+    	vSequenceEcritureComptable.setDerniereValeur(00001);
+    	
+    	
+    }
+    
+    
+    
+    
+    
 
 }
