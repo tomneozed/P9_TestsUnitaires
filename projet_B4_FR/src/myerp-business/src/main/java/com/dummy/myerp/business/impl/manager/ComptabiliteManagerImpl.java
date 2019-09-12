@@ -194,8 +194,43 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
 
         // TODO ===== RG_Compta_5 : Format et contenu de la référence
         // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
+        
+        // Test année de référence = année d'écriture 
+        
+        //On regarde si la référence n'est pas nulle
+        if(pEcritureComptable.getReference() != null) {
+        	String codeRef = "";
+        	String dateRef = "";
+        	String reference = pEcritureComptable.getReference();
+        	
+        	//On extrait la date de la référence
+        	dateRef = reference.substring(reference.indexOf("-"), reference.indexOf("-")+4);
+        	
+        	//On prend la date de l'écriture comptable
+        	Calendar cal = Calendar.getInstance();
+        	String dateEcriture = "";
+        	cal.setTime(pEcritureComptable.getDate());
+        	dateEcriture = String.valueOf(cal.get(Calendar.YEAR));
+        	
+        	//On compare les 2, si elles ne se valent pas, on renvoie une Exception
+        	if(!dateRef.equals(dateEcriture)) {
+        		throw new FunctionalException("L'année de référence ne correspond pas à l'année d'écriture de l'écriture comptable");
+        	}
+        	
+        	//Test reference.code = journalComptable.code
+        	
+            //On extrait le code de la référence$
+        	codeRef = reference.substring(0, reference.indexOf("-"));    
+            
+            //On extrait le code du journalComptable
+        	String codeJournalComptable = pEcritureComptable.getJournal().getCode();
+        	
+        	//On compare les 2, si ils ne se valent pas, on renvoie une Exception
+        	if(!codeRef.equals(codeJournalComptable)) {
+        		throw new FunctionalException("Le code de la référence ne correspond pas au code du journal comptable");
+        	}
+        }
     }
-
 
     /**
      * Vérifie que l'Ecriture comptable respecte les règles de gestion liées au contexte
